@@ -1,7 +1,7 @@
 #!/bin/bash
 
 SPATH="$(realpath "$(dirname "$0")")"
-SERVICE_FILE="$HOME/.config/systemd/user/code.service"
+SERVICE_FILE="$HOME/.config/systemd/user/code-server.service"
 
 if [ -e "$SERVICE_FILE" ]; then
 	echo "Service file $SERVICE_FILE exist"
@@ -25,6 +25,6 @@ printf "%s\n" "
 [Install]
 WantedBy=default.target" >> "$SERVICE_FILE"
 
-systemctl enable --now --user code.service
-systemctl status --user code.service
+systemctl enable --now --user code-server.service
+systemctl status --user code-server.service
 
