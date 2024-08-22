@@ -1,6 +1,10 @@
 #!/bin/bash
 
-SPATH="$(realpath "$(dirname "$0")")"
+if [ ! -z "$TARGET" ]; then
+	SPATH="$TARGET"
+else
+	SPATH="$(realpath "$(dirname "$0")")"
+fi
 
 # Version check
 LATEST="$(curl https://github.com/coder/code-server/releases/latest -i | grep location: | sed -r 's|location: https://github\.com/coder/code\-server/releases/tag/v||' | tr -d '\r')"
