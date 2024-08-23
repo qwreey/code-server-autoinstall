@@ -8,13 +8,13 @@ fi
 
 # Timecheck (prevent spam)
 NOW="$(date +%s)"
-[ -e "$SPATH/code-server" ] && TIME_FILE="$SPATH/last-check"
-if [ -e "$TIME_FILE" ]; then
+TIME_FILE="$SPATH/last-check"
+if [ -e "$SPATH/code-server" ] && [ -e "$TIME_FILE" ]; then
 	if (( $NOW-"$(cat $TIME_FILE)" < 3600 )); then
 		exit 0
 	fi
 fi
-printf "%s" "$NOW" > $TIME_FILE
+printf "%s" "$NOW" > "$TIME_FILE"
 
 # Version check
 LATEST="$(curl https://github.com/coder/code-server/releases/latest -i | grep location: | sed -r 's|location: https://github\.com/coder/code\-server/releases/tag/v||' | tr -d '\r')"
