@@ -22,6 +22,7 @@ case ":${PATH}:" in
 	;;
 esac
 
+NOW="$(date +%s)"
 if [ -e "$SPATH/patch" ]; then
 	[ ! -e "$SPATH/code-server/lib/vscode/out/vs/patch" ] && ln -s "$SPATH/patch" "$SPATH/code-server/lib/vscode/out/vs/patch"
 	buf=""
@@ -29,9 +30,9 @@ if [ -e "$SPATH/patch" ]; then
 		name="$(basename -- "$entry")"
 		extension="${name##*.}"
 		if [ "$extension" = "js" ]; then
-			buf+="<script src=\"{{WORKBENCH_WEB_BASE_URL}}/out/vs/patch/$name\"></script>"
+			buf+="<script src=\"{{WORKBENCH_WEB_BASE_URL}}/out/vs/patch/$name?r=$NOW\"></script>"
 		elif [ "$extension" = "css" ]; then
-			buf+="<link rel="stylesheet" href=\"{{WORKBENCH_WEB_BASE_URL}}/out/vs/patch/$name\">"
+			buf+="<link rel="stylesheet" href=\"{{WORKBENCH_WEB_BASE_URL}}/out/vs/patch/$name?r=$NOW\">"
 		fi
 	done
 	sed -E "s|^.+</head>\$|    $buf</head>|" -i "$SPATH/code-server/lib/vscode/out/vs/code/browser/workbench/workbench.html"
