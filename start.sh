@@ -6,5 +6,12 @@ else
 	SPATH="$(realpath "$(dirname "$0")")"
 fi
 
-"$SPATH/code-server/bin/code-server" --user-data-dir="$SPATH/user-data" --extensions-dir="$SPATH/extensions" --config "$SPATH/config.yaml" "$@"
+case ":${PATH}:" in
+    *:"$SPATH":*)
+	;;
+    *)
+        export PATH="$SPATH/code-server/bin:$PATH"
+	;;
+esac
 
+"$SPATH/code-server/bin/code-server" --user-data-dir="$SPATH/user-data" --extensions-dir="$SPATH/extensions" --config "$SPATH/config.yaml" "$@"

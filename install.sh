@@ -28,9 +28,9 @@ fi
 mkdir -p "$SPATH/code-server"
 curl -fL https://github.com/coder/code-server/releases/download/v$LATEST/code-server-$LATEST-linux-amd64.tar.gz \
   | tar -C "$SPATH/code-server" -xz --strip-components=1
+ln -s "$SPATH/code-server/bin/code-server" "$SPATH/code-server/bin/code"
 
 # Save version
 CURLSTATE="$?"
 [ "$CURLSTATE" == '0' ] && printf "%s" "$LATEST" > "$VERSION_FILE"
 exit "$?"
-
