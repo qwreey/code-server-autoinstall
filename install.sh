@@ -28,7 +28,15 @@ fi
 mkdir -p "$SPATH/code-server"
 curl -fL https://github.com/coder/code-server/releases/download/v$LATEST/code-server-$LATEST-linux-amd64.tar.gz \
   | tar -C "$SPATH/code-server" -xz --strip-components=1
-ln -s "$SPATH/code-server/bin/code-server" "$SPATH/code-server/bin/code"
+
+# Create helper bin
+mkdir -p "$SPATH/bin"
+[ -e "$SPATH/bin/browser.sh" ] && rm "$SPATH/bin/browser.sh"
+[ -e "$SPATH/bin/code" ] && rm "$SPATH/bin/code"
+[ -e "$SPATH/bin/code-server" ] && rm "$SPATH/bin/code-server"
+ln -s "$SPATH/code-server/lib/vscode/bin/helpers/browser-linux.sh" "$SPATH/bin/browser.sh"
+ln -s "$SPATH/code-server/lib/vscode/bin/remote-cli/code-linux.sh" "$SPATH/bin/code"
+ln -s "$SPATH/code-server/lib/vscode/bin/remote-cli/code-linux.sh" "$SPATH/bin/code-server"
 
 # Save version
 CURLSTATE="$?"

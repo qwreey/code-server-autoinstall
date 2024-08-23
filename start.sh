@@ -7,10 +7,10 @@ else
 fi
 
 case ":${PATH}:" in
-    *:"$SPATH":*)
+    *:"$SPATH/bin":*)
 	;;
     *)
-        export PATH="$SPATH/code-server/bin:$PATH"
+        export PATH="$SPATH/bin:$PATH"
 	;;
 esac
 
