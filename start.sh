@@ -39,6 +39,7 @@ else
 	if [ -e "$SPATH/code-server/lib/vscode/out/vs/patch" ]; then
 		rm "$SPATH/code-server/lib/vscode/out/vs/patch"
 	fi
+	sed -E "s|^.+</head>\$|    </head>|" -i "$SPATH/code-server/lib/vscode/out/vs/code/browser/workbench/workbench.html"
 fi
 
 "$SPATH/code-server/bin/code-server" --user-data-dir="$SPATH/user-data" --extensions-dir="$SPATH/extensions" --config "$SPATH/config.yaml" "$@"
