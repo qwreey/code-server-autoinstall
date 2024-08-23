@@ -6,9 +6,9 @@ else
 	SPATH="$(realpath "$(dirname "$0")")"
 fi
 
-# Version check
+# Timecheck (prevent spam)
 NOW="$(date +%s)"
-TIME_FILE="$SPATH/last-check"
+[ -e "$SPATH/code-server" ] && TIME_FILE="$SPATH/last-check"
 if [ -e "$TIME_FILE" ]; then
 	if (( $NOW-"$(cat $TIME_FILE)" < 3600 )); then
 		exit 0
@@ -16,6 +16,7 @@ if [ -e "$TIME_FILE" ]; then
 fi
 printf "%s" "$NOW" > $TIME_FILE
 
+# Version check
 LATEST="$(curl https://github.com/coder/code-server/releases/latest -i | grep location: | sed -r 's|location: https://github\.com/coder/code\-server/releases/tag/v||' | tr -d '\r')"
 VERSION_FILE="$SPATH/installed-version"
 [ -e "$SPATH/code-server" ] && [ -e "$VERSION_FILE" ] && CURRENT="$(cat "$VERSION_FILE")"
