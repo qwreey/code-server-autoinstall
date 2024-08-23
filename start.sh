@@ -28,9 +28,9 @@ if [ -e "$SPATH/patch" ]; then
 	for entry in "$SPATH/patch"/*; do
 		name="$(basename -- "$entry")"
 		extension="${name##*.}"
-		if [ extension = "js" ]; then
+		if [ "$extension" = "js" ]; then
 			buf+="<script src=\"{{WORKBENCH_WEB_BASE_URL}}/out/vs/patch/$name\"></script>"
-		elif [ extension = "css" ]; then
+		elif [ "$extension" = "css" ]; then
 			buf+="<link rel="stylesheet" href=\"{{WORKBENCH_WEB_BASE_URL}}/out/vs/patch/$name\">"
 		fi
 	done
