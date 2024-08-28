@@ -22,17 +22,17 @@ case ":${PATH}:" in
 	;;
 esac
 
-NOW="$(date +%s)"
 if [ -e "$SPATH/patch" ]; then
 	[ ! -e "$SPATH/code-server/lib/vscode/out/vs/patch" ] && ln -s "$SPATH/patch" "$SPATH/code-server/lib/vscode/out/vs/patch"
 	buf=""
 	for entry in "$SPATH/patch"/*; do
 		name="$(basename -- "$entry")"
 		extension="${name##*.}"
+		#  TODO: Async sha1sum
 		if [ "$extension" = "js" ]; then
-			buf+="<script src=\"{{WORKBENCH_WEB_BASE_URL}}/out/vs/patch/$name?r=$NOW\"></script>"
+			buf+="<script src=\"{{WORKBENCH_WEB_BASE_URL}}/out/vs/patch/$name?r=$(sha1sum "$entry" | awk '{ print $1 }')\"></script>"
 		elif [ "$extension" = "css" ]; then
-			buf+="<link rel="stylesheet" href=\"{{WORKBENCH_WEB_BASE_URL}}/out/vs/patch/$name?r=$NOW\">"
+			buf+="<link rel="stylesheet" href=\"{{WORKBENCH_WEB_BASE_URL}}/out/vs/patch/$name?r=$(sha1sum "$entry" | awk '{ print $1 }')\">"
 		fi
 	done
 	sed -E "s|^.+</head>\$|    $buf</head>|" -i "$SPATH/code-server/lib/vscode/out/vs/code/browser/workbench/workbench.html"
