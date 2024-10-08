@@ -17,7 +17,7 @@ fi
 printf "%s" "$NOW" > "$TIME_FILE"
 
 # Version check
-LATEST="$(curl https://github.com/coder/code-server/releases/latest -i | grep location: | sed -r 's|location: https://github\.com/coder/code\-server/releases/tag/v||' | tr -d '\r')"
+LATEST="$(curl -s https://github.com/coder/code-server/releases/latest -i | grep location: | sed -r 's|location: https://github\.com/coder/code\-server/releases/tag/v||' | tr -d '\r')"
 VERSION_FILE="$SPATH/installed-version"
 [ -e "$SPATH/code-server" ] && [ -e "$VERSION_FILE" ] && CURRENT="$(cat "$VERSION_FILE")"
 if [ "x$LATEST" == "x$CURRENT" ]; then
