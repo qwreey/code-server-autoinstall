@@ -6,3 +6,5 @@ config.yaml
 last-check
 bin/
 patch/
+env
+

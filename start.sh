@@ -43,4 +43,23 @@ else
 	sed -E "s|^.+</head>\$|    </head>|" -i "$SPATH/code-server/lib/vscode/out/vs/code/browser/workbench/workbench.html"
 fi
 
+if [ -e "$SPATH/env" ]; then
+	source "$SPATH/env"
+fi
+
+if [ -e "$SPATH/patch/icons/pwa-icon-512.png" ] && [ -z "$PWA_ICON_PREFIX" ]; then
+	export PWA_ICON_PREFIX="{{BASE}}/_static/lib/vscode/out/vs/patch/icons/pwa-icon-"
+fi
+if [ -e "$SPATH/patch/icons/pwa-icon-192.png" ]; then
+	sed 's|<link rel="apple-touch-icon" sizes="192x192" href="{{CS_STATIC_BASE}}/src/browser/media/pwa-icon-192\.png" */>|<link rel="apple-touch-icon" sizes="192x192" href="{{BASE}}/_static/lib/vscode/out/vs/patch/icons/pwa-icon-192.png" />|' -i $SPATH/code-server/src/browser/pages/*.html "$SPATH/code-server/lib/vscode/out/vs/code/browser/workbench/workbench.html"
+fi
+if [ -e "$SPATH/patch/icons/pwa-icon-512.png" ]; then
+	sed 's|<link rel="apple-touch-icon" sizes="512x512" href="{{CS_STATIC_BASE}}/src/browser/media/pwa-icon-512\.png" */>|<link rel="apple-touch-icon" sizes="512x512" href="{{BASE}}/_static/lib/vscode/out/vs/patch/icons/pwa-icon-512.png" />|' -i $SPATH/code-server/src/browser/pages/*.html "$SPATH/code-server/lib/vscode/out/vs/code/browser/workbench/workbench.html"
+fi
+
+sed 's|^ *name: appName,$|name: process.env.PWA_NAME \|\| appName,|' -i $SPATH/code-server/out/node/routes/vscode.js
+sed 's|^ *short_name: appName,$|short_name: process.env.PWA_SHORT_NAME \|\| appName,|' -i $SPATH/code-server/out/node/routes/vscode.js
+sed 's|^ *src: `{{BASE}}/_static/src/browser/media/pwa-icon-${size}\.png`,$|src: process.env.PWA_ICON_PREFIX ? (process.env.PWA_ICON_PREFIX + size + (process.env.PWA_ICON_SUFFIX \|\| ".png")) : `{{BASE}}/_static/src/browser/media/pwa-icon-${size}.png`,|' -i $SPATH/code-server/out/node/routes/vscode.js
+
 exec "$SPATH/code-server/bin/code-server" --user-data-dir="$SPATH/user-data" --extensions-dir="$SPATH/extensions" --config "$SPATH/config.yaml" "$@"
+
