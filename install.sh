@@ -17,27 +17,38 @@ fi
 printf "%s" "$NOW" > "$TIME_FILE"
 
 # Version check
-LATEST="$(curl -s https://github.com/coder/code-server/releases/latest -i | grep location: | sed -r 's|location: https://github\.com/coder/code\-server/releases/tag/v||' | tr -d '\r')"
+while true; do
+	LATEST_CURL="$(curl -s https://github.com/coder/code-server/releases/latest -i)"
+	[ "$?" == '0' ] && break
+	echo "Failed to fetch latest version from https://github.com/coder/code-server/releases/latest"
+done
+LATEST="$(printf "%s" "$LATEST_CURL" | grep location: | sed -r 's|location: https://github\.com/coder/code\-server/releases/tag/v||' | tr -d '\r')"
+echo "Fetched latest version: $LATEST"
 VERSION_FILE="$SPATH/installed-version"
 [ -e "$SPATH/code-server" ] && [ -e "$VERSION_FILE" ] && CURRENT="$(cat "$VERSION_FILE")"
 if [ "x$LATEST" == "x$CURRENT" ]; then
 	exit 0
 fi
+echo "Installing..."
 
 # Download
 [ -e "$SPATH/code-server" ] && rm -rf "$SPATH/code-server"
 mkdir -p "$SPATH/code-server"
 curl -fL https://github.com/coder/code-server/releases/download/v$LATEST/code-server-$LATEST-linux-amd64.tar.gz \
   | tar -C "$SPATH/code-server" -xz --strip-components=1
+if [ "$?" != '0' ]; then
+	echo "Download failed."
+	exit 1
+fi
 
 # Create helper bin
 mkdir -p "$SPATH/bin"
 [ -e "$SPATH/bin/browser.sh" ] && rm "$SPATH/bin/browser.sh"
 [ -e "$SPATH/bin/code" ] && rm "$SPATH/bin/code"
 [ -e "$SPATH/bin/code-server" ] && rm "$SPATH/bin/code-server"
-ln -s "$SPATH/code-server/lib/vscode/bin/helpers/browser-linux.sh" "$SPATH/bin/browser.sh"
-ln -s "$SPATH/code-server/lib/vscode/bin/remote-cli/code-linux.sh" "$SPATH/bin/code"
-ln -s "$SPATH/code-server/lib/vscode/bin/remote-cli/code-linux.sh" "$SPATH/bin/code-server"
+ln -s "$SPATH/code-server/lib/vscode/bin/helpers/browser.sh" "$SPATH/bin/browser.sh"
+ln -s "$SPATH/code-server/lib/vscode/bin/remote-cli/code-server.sh" "$SPATH/bin/code"
+ln -s "$SPATH/code-server/lib/vscode/bin/remote-cli/code-server.sh" "$SPATH/bin/code-server"
 
 # Save version
 CURLSTATE="$?"
