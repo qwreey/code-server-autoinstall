@@ -21,6 +21,8 @@ while true; do
 	LATEST_CURL="$(curl -s https://github.com/coder/code-server/releases/latest -i)"
 	[ "$?" == '0' ] && break
 	echo "Failed to fetch latest version from https://github.com/coder/code-server/releases/latest"
+	echo "Retrying after 10 seconds..."
+	sleep 10
 done
 LATEST="$(printf "%s" "$LATEST_CURL" | grep location: | sed -r 's|location: https://github\.com/coder/code\-server/releases/tag/v||' | tr -d '\r')"
 echo "Fetched latest version: $LATEST"
