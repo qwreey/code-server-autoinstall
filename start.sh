@@ -81,8 +81,8 @@ apply_pwa_metadata_patch() {
 		sed 's|<link rel="apple-touch-icon" sizes="512x512" href="{{CS_STATIC_BASE}}/src/browser/media/pwa-icon-512\.png" */>|<link rel="apple-touch-icon" sizes="512x512" href="{{BASE}}/_static/lib/vscode/out/vs/patch/icons/pwa-icon-512.png" />|' -i $SPATH/code-server/src/browser/pages/*.html "$SPATH/code-server/lib/vscode/out/vs/code/browser/workbench/workbench.html"
 	fi
 
-	sed 's|^ *name: appName,$|name: process.env.PWA_NAME \|\| appName,|' -i $SPATH/code-server/out/node/routes/vscode.js
-	sed 's|^ *short_name: appName,$|short_name: process.env.PWA_SHORT_NAME \|\| appName,|' -i $SPATH/code-server/out/node/routes/vscode.js
+	sed 's|^ *name: req.args."app-name".,$|name: process.env.PWA_NAME \|\| req.args["app-name"],|' -i $SPATH/code-server/out/node/routes/vscode.js
+	sed 's|^ *short_name: req.args."app-name".,$|short_name: process.env.PWA_SHORT_NAME \|\| req.args["app-name"],|' -i $SPATH/code-server/out/node/routes/vscode.js
 	sed 's|^ *src: `{{BASE}}/_static/src/browser/media/pwa-icon-${size}\.png`,$|src: process.env.PWA_ICON_PREFIX ? (process.env.PWA_ICON_PREFIX + size + (process.env.PWA_ICON_SUFFIX \|\| ".png")) : `{{BASE}}/_static/src/browser/media/pwa-icon-${size}.png`,|' -i $SPATH/code-server/out/node/routes/vscode.js
 }
 
