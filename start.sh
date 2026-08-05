@@ -90,15 +90,23 @@ apply_pwa_metadata_patch() {
 apply_pwa_metadata_patch
 if [ -e "$SPATH/patch" ]; then
 	# Applies patches
-	[ ! -e "$PATH_PATH" ] && ln -s "$SPATH/patch" "$PATH_PATH"
+	# ln -sfn (not [ ! -e X ] && ln -s X) - `-e` follows a symlink to its
+	# target, so it's false for a *dangling* symlink left over from a
+	# previous SPATH (e.g. after moving $TARGET elsewhere), which meant the
+	# guard incorrectly thought no link was there yet and the plain ln -s
+	# failed with "File exists". -f overwrites regardless of what's
+	# currently there; -n keeps ln from treating an existing PATH_PATH
+	# directory as a place to put the link inside rather than the link
+	# name itself.
+	ln -sfn "$SPATH/patch" "$PATH_PATH"
 	mkdir -p "$MANAGED_PATH"
 	probe_window_appicon
 	apply_resource_inject
 else
-	# Undo all patches
-	if [ -e "$SPATH/code-server/lib/vscode/out/vs/patch" ]; then
-		rm "$SPATH/code-server/lib/vscode/out/vs/patch"
-	fi
+	# Undo all patches. rm -f (not an [ -e X ] guard) for the same reason
+	# as above - it's also correct for a dangling symlink, and does not
+	# error when there's nothing to remove.
+	rm -f "$SPATH/code-server/lib/vscode/out/vs/patch"
 	sed -E "s|^.+</head>\$|    </head>|" -i "$SPATH/code-server/lib/vscode/out/vs/code/browser/workbench/workbench.html"
 fi
 

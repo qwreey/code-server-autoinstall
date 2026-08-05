@@ -44,13 +44,21 @@ if [ "$?" != '0' ]; then
 fi
 
 # Create helper bin
+# ln -sf (not a separate [ -e X ] && rm X + plain ln -s) - `-e` follows a
+# symlink to its target, so it's false for a *dangling* symlink left over
+# from a previous SPATH (e.g. after moving $TARGET elsewhere), which meant
+# the guard never fired and the plain ln -s below failed with "File
+# exists". -f overwrites regardless of what's currently there.
 mkdir -p "$SPATH/bin"
-[ -e "$SPATH/bin/browser.sh" ] && rm "$SPATH/bin/browser.sh"
-[ -e "$SPATH/bin/code" ] && rm "$SPATH/bin/code"
-[ -e "$SPATH/bin/code-server" ] && rm "$SPATH/bin/code-server"
-ln -s "$SPATH/code-server/lib/vscode/bin/helpers/browser.sh" "$SPATH/bin/browser.sh"
-ln -s "$SPATH/code-server/lib/vscode/bin/remote-cli/code-server.sh" "$SPATH/bin/code"
-ln -s "$SPATH/code-server/lib/vscode/bin/remote-cli/code-server.sh" "$SPATH/bin/code-server"
+ln -sf "$SPATH/code-server/lib/vscode/bin/helpers/browser.sh" "$SPATH/bin/browser.sh"
+# Newer code-server releases ship remote-cli's wrapper without a .sh
+# extension (older ones had it) - resolve whichever actually exists instead
+# of hardcoding one, so this doesn't silently dangle again on the next
+# upstream rename.
+CLI_SCRIPT="$SPATH/code-server/lib/vscode/bin/remote-cli/code-server"
+[ -e "$CLI_SCRIPT" ] || CLI_SCRIPT="$CLI_SCRIPT.sh"
+ln -sf "$CLI_SCRIPT" "$SPATH/bin/code"
+ln -sf "$CLI_SCRIPT" "$SPATH/bin/code-server"
 
 # Save version
 CURLSTATE="$?"
