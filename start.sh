@@ -83,7 +83,7 @@ apply_pwa_metadata_patch() {
 
 	sed 's|^ *name: req.args."app-name".,$|name: process.env.PWA_NAME \|\| req.args["app-name"],|' -i $SPATH/code-server/out/node/routes/vscode.js
 	sed 's|^ *short_name: req.args."app-name".,$|short_name: process.env.PWA_SHORT_NAME \|\| req.args["app-name"],|' -i $SPATH/code-server/out/node/routes/vscode.js
-	sed 's|^ *display: "fullscreen",$|display: process.env.PWA_DISPLAY_MODE \|\| "fullscreen",|' -i $SPATH/code-server/out/node/routes/vscode.js
+	sed 's|^ *display: "fullscreen",$|display: process.env.PWA_DISPLAY_MODE \|\| "standalone",|' -i $SPATH/code-server/out/node/routes/vscode.js
 	sed 's|^ *src: `{{BASE}}/_static/src/browser/media/pwa-icon-${size}\.png`,$|src: process.env.PWA_ICON_PREFIX ? (process.env.PWA_ICON_PREFIX + size + (process.env.PWA_ICON_SUFFIX \|\| ".png")) : `{{BASE}}/_static/src/browser/media/pwa-icon-${size}.png`,|' -i $SPATH/code-server/out/node/routes/vscode.js
 }
 
