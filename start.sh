@@ -116,4 +116,22 @@ if [ -e "$SPATH/env" ]; then
 	source "$SPATH/env"
 fi
 
+# Port proxy off by default - upstream code-server ships it on.
+# code-server's /proxy/<port>/, /absproxy/<port>/ and *.<proxy-domain>
+# routes proxy to *any* port listening where code-server runs, guarded by
+# nothing but code-server's own auth - which is commonly `auth: none`
+# behind an external reverse proxy. VS Code's PORTS tab also auto-forwards
+# through them, so a port nobody meant to publish becomes reachable the
+# moment a dev server starts listening on it. Off unless explicitly asked
+# for is the safer default for that.
+#
+# Handled here rather than in config.yaml on purpose: code-server reads any
+# boolean key *present* in that file as true regardless of its value
+# (`disable-proxy: false` still disables), so config.yaml can never express
+# "on" - see parseConfigFile/parse in code-server's own out/node/cli.js.
+# CS_DISABLE_PROXY is code-server's own env var, matched against
+# /^(1|true)$/ there, so setting it to 0/false/anything else in $SPATH/env
+# (sourced above) restores upstream behavior.
+export CS_DISABLE_PROXY="${CS_DISABLE_PROXY:-1}"
+
 exec "$SPATH/code-server/bin/code-server" --user-data-dir="$SPATH/user-data" --extensions-dir="$SPATH/extensions" --config "$SPATH/config.yaml" "$@"
